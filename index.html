@@ -1,0 +1,43 @@
+<html lang="en">
+	<head>
+		<title>S4FE - Simulator</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+		<style>
+			body {
+				margin: 0;
+				font-family: 'Roboto', sans-serif;
+			}
+			.dg.main.a {
+				width: 450px !important;
+			}
+			.dg.main .close-button.close-bottom {
+			    width: 450px !important;
+			}
+			.info-box {
+				width: 400px;
+				padding: 10px 20px;
+				position: absolute;
+				top: 10;
+				left: 10;
+				border-radius: 5px;
+				background-color: rgba(0, 0, 0, 0.1);
+			}
+		</style>
+		<script src="./build/bundle.js" defer></script>
+	</head>
+<body>
+	<div class="info-box">
+		<p>One grid square corresponds to 100px == 100cm</p>
+		<p>Agents have a 50cm footprint and are 160cm tall</p>
+		<p>
+			Coordinate system:<br>
+			- top-left (-,-)<br>
+			- bottom-right (+,+)
+		</p>
+	</div>
+</body>
+</html>
