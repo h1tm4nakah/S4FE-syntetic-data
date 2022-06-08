@@ -101,30 +101,30 @@ class App {
 		gui = new GUI()
 
 		var f1 = gui.addFolder('Master Paths');
-		f1.add({addNewMasterPath:function(){ 
+		f1.add(controller, 'pathPoints', 2, 20).step(1).name('Path Points');
+		f1.add(controller, 'showMasterPaths').onChange( function() {	
+			 masterPathsArray.forEach(mp => (controller.showMasterPaths) ? mp.show() : mp.hide());
+	    }).name('Show Master Paths');
+	    f1.add({addNewMasterPath:function(){ 
 			const mp = new MasterPath();
 			console.log("Added new line with length: ", mp.path.getLength());
 			mp.show();
 			masterPathsArray.push(mp);
 		}}, 'addNewMasterPath').name('Add Master Path');
-		f1.add(controller, 'pathPoints', 2, 20).step(1).name('Path Points');
-		f1.add(controller, 'showMasterPaths').onChange( function() {	
-			 masterPathsArray.forEach(mp => (controller.showMasterPaths) ? mp.show() : mp.hide());
-	    }).name('Show Master Paths');
 		f1.open();
 
 		var f2 = gui.addFolder('Planimetry');
 		f2.add(controller, 'planeWidth', 500, 3000).step(20).onChange(function() {
 			plane.scale.x = controller.planeWidth;
-		}).name('Plane Width');
+		}).name('Plane Width [cm]');
 		f2.add(controller, 'planeHeight', 500, 3000).step(20).onChange(function() {
 			plane.scale.z = controller.planeHeight;
-		}).name('Plane Height');
+		}).name('Plane Height [cm]');
 		f2.open();
 
 		var f3 = gui.addFolder('Cameras');
-		f3.add(controller, 'cameraWidth', 100, 1000).step(10).name('Camera Width');
-		f3.add(controller, 'cameraHeight', 100, 1000).step(10).name('Camera Height');
+		f3.add(controller, 'cameraWidth', 100, 1000).step(10).name('Camera Width [cm]');
+		f3.add(controller, 'cameraHeight', 100, 1000).step(10).name('Camera Height [cm]');
 		f3.add({addNewCamera:function(){ 
 			const c = new Camera();
 			camerasArray.push(c);
@@ -163,6 +163,10 @@ class App {
 			state = "run";
 		}}, 'startSimulation').name('Start Simulation');
 		f5.add({generateJSONData:function(){
+			if (state === "run") {
+				alert("simulation is still running");
+				return;
+			}
 			transformControl.detach();
 			if (masterPathsArray.length < 1) {
 				alert("Generate at least one master path");
