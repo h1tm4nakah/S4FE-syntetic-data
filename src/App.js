@@ -10,9 +10,9 @@ let controller = new function() {
 	this.showPaths = false;
 	this.biDirectional = true;
 	this.pathNoise = 70;
-	this.numAgents = 10;
+	this.numAgents = 50;
 	this.agentsSpeed = 141;
-	this.agentsSpeedDeviation = 20;
+	this.agentsSpeedDeviation = this.agentsSpeed / 5;
 	this.agentsSpeedIsLinear = true;
 	this.FPS = 10;
 	this.pathPoints = 5;
@@ -21,7 +21,7 @@ let controller = new function() {
 	this.planeHeight = 1200;
 	this.cameraWidth = 600;
 	this.cameraHeight = 400;
-	this.spawnDuration = 10;
+	this.spawnDuration = 100;
 };
 
 let clock = new THREE.Clock();
@@ -76,6 +76,32 @@ class App {
 
 		window.addEventListener( 'resize', onWindowResize, false );
 		document.addEventListener( 'pointerdown', onPointerDown );
+		document.addEventListener('keyup', (event) => {
+			var name = event.key;
+			if (transformControl.object && (name === "Backspace" || name === "Delete")) {
+				const target = transformControl.object;
+				if(target.name === "camera") {
+					const index = camerasArray.findIndex(c => c.cameraPlane === target);
+					if (index > -1) {
+						transformControl.detach(target);
+						scene.remove(target);
+						camerasArray.splice(index, 1);
+					}
+				}
+				if(target.name === "master_path_node") {
+					const index = masterPathsArray.findIndex(mp => 
+						mp.basePointsMeshes.some(bp => {
+							return bp.uuid === target.uuid;
+						})
+					);
+					if (index > -1) {
+						transformControl.detach(target);
+						masterPathsArray[index].hide();
+						masterPathsArray.splice(index, 1);
+					}
+				}
+			}
+		}, false);
 
 		const controls = new OrbitControls( camera, renderer.domElement );
 		scene.add(controls);
@@ -143,8 +169,14 @@ class App {
 	    }).name('Show Agents\' Paths');
       	f4.add(controller, 'biDirectional').name('Agents\' Move Both Dir');
 
-      	f4.add(controller, 'agentsSpeed', 0, 300).step(1).name('Agents\' Speed [cm/s]');
-      	f4.add(controller, 'agentsSpeedDeviation', 0, 100).step(1).name('Agents\' Speed Delta [cm/s]');
+      	f4.add(controller, 'agentsSpeed', 50, 300).step(1).name('Agents\' Speed [cm/s]').onFinishChange(function () {
+      		// To prevent negative speed values we bound the deviation
+			speed_dev.__max = (controller.agentsSpeed/2) - 20;
+			controller.agentsSpeedDeviation = (controller.agentsSpeedDeviation > speed_dev.__max) ? speed_dev.__max : controller.agentsSpeedDeviation;
+			speed_dev.updateDisplay();
+	 	});
+
+      	const speed_dev = f4.add(controller, 'agentsSpeedDeviation', 0, ((controller.agentsSpeed/2) - 20)).step(1).name('Agents\' Speed Delta [cm/s]');
       	f4.add(controller, 'agentsSpeedIsLinear').name('Agents\' Speed Linear');
 		f4.open();
 
@@ -152,7 +184,7 @@ class App {
 		f5.add(controller, 'FPS', 1, 60).onChange( function() {
 	       interval = 1 / controller.FPS;
 	    }).name('Limit FPS To');
-	    f5.add(controller, 'spawnDuration', 0, 100).step(1).name('Spawn\' duration [s]');
+	    f5.add(controller, 'spawnDuration', 0, 300).step(1).name('Spawn\' duration [s]');
 		f5.add({startSimulation:function(){
 			transformControl.detach();
 			if (masterPathsArray.length < 1) {
@@ -392,6 +424,7 @@ class MasterPath {
 		this.basePointsMeshes = [];
 		this.basePointsVectors.forEach(p => {
 			const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+			cube.name = "master_path_node";
 			cube.position.copy(p);
 			this.basePointsMeshes.push(cube);
 		});
@@ -432,6 +465,7 @@ class Camera {
 		this.cameraPlane.position.z = 0;
 		this.cameraPlane.scale.x = controller.cameraWidth;
 		this.cameraPlane.scale.z = controller.cameraHeight;
+		this.cameraPlane.name = "camera";
 		scene.add(this.cameraPlane);
 		this.updateSpline();
 	}
