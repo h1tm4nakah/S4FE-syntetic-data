@@ -356,7 +356,8 @@ class Agent {
 		this.line = line;
 
 	    this.startTime = Math.random() * controller.spawnDuration;
-	    this.baseSpeed = controller.agentsSpeed + ((Math.random() * controller.agentsSpeedDeviation) * (Math.round(Math.random()) ? 1 : -1));
+	    const calculatedSpeed = controller.agentsSpeed + ((Math.random() * controller.agentsSpeedDeviation) * (Math.round(Math.random()) ? 1 : -1));
+	    this.baseSpeed = Math.max(0.2, calculatedSpeed);
 	    this.direction = (Math.random() > 0.5 && controller.biDirectional) ? false : true;
 	    this.currentPosition = (this.direction) ? 0 : this.path.getLength();
 
@@ -368,6 +369,7 @@ class Agent {
 	 }
 
 	 tick(delta) {
+	 	// base speed is meters/s, delta is seconds so the result is meters
 	 	const ammountMoved = this.baseSpeed * delta;
 	 	this.currentPosition -= (this.direction) ? (-1 * ammountMoved) : ammountMoved;
 	 	if (this.direction && this.currentPosition > this.path.getLength()) this.currentPosition = this.path.getLength();
