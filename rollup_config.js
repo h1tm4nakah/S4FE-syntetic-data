@@ -12,5 +12,5 @@ export default {
 			file: 'build/bundle.js'
 		}
 	],
-	plugins: [ resolve(), terser(), serve(), livereload() ]
+	plugins: [ resolve(), terser(), serve()]
 };
