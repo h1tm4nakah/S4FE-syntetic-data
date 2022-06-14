@@ -254,7 +254,6 @@ function generateJSON() {
 				const pathLength = a.path.getLength();
 				const pointOnPath = a.currentPosition / pathLength;
 				const pointOnLine = a.path.getPointAt(pointOnPath);
-				console.log(pointOnLine);
 				camerasArray.forEach((camera, idx) => {
 					if (camera.isOnPlane(pointOnLine)) {
 						jsonOutput.push({"camera": idx, "timestamp": timestamp, "position": camera.getRelativePosition(pointOnLine)});
