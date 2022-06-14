@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+
 import { GUI } from 'dat.gui'
 
 let state = "start"
@@ -43,6 +44,7 @@ var elapsedTime = 0;
 
 const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
 const cubeMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+const camerasSpan = document.getElementById("cameras");
 
 class App {
 
@@ -116,6 +118,7 @@ class App {
 			[...masterPathsArray, ...camerasArray].forEach(mpa => {
 				mpa.updateSpline();
 			});
+			updateCamerasSpan();
 		});
 		scene.add(transformControl);
 
@@ -154,6 +157,7 @@ class App {
 		f3.add({addNewCamera:function(){ 
 			const c = new Camera();
 			camerasArray.push(c);
+			updateCamerasSpan();
 		}}, 'addNewCamera').name('Add New Camera');
 		f3.open();
 
@@ -517,6 +521,12 @@ var encode = function(s) {
 		out[i] = s.charCodeAt(i);
 	}
 	return new Uint8Array( out );
+}
+
+function updateCamerasSpan() {
+	camerasSpan.innerHTML = camerasArray.reduce((pv, cv, idx) =>
+		pv + "<li>Camera-" + idx + " -> x: " + Math.round(cv.cameraPlane.position.x) + "  y: " + Math.round(cv.cameraPlane.position.z) + "</li>", ""
+	);
 }
 
 export default App;
