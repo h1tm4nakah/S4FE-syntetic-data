@@ -524,7 +524,12 @@ var encode = function(s) {
 
 function updateCamerasSpan() {
 	camerasSpan.innerHTML = camerasArray.reduce((pv, cv, idx) =>
-		pv + "<li>Camera-" + idx + " -> x: " + Math.round(cv.cameraPlane.position.x) + "  y: " + Math.round(cv.cameraPlane.position.z) + "</li>", ""
+		pv + 
+		"<li>Camera-" + idx + " -> x: " + 
+		Math.round(cv.cameraPlane.position.x - (cv.cameraPlane.scale.x / 2)) + 
+		"  y: " + 
+		Math.round(cv.cameraPlane.position.z - (cv.cameraPlane.scale.z / 2)) + 
+		"</li>", ""
 	);
 }
 
